@@ -5,3 +5,4 @@ You can download and improve this code.
 
 - WebGl implementation
 - use arrow keys to move Rosi and find the cheese
+- Action File included. this have the code ( action_Maze.js ).
