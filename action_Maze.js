@@ -5,11 +5,14 @@
 // Supported types are: int, float, string, bool, color, vect3d, scenenode, texture, action
 /*
 	<action jsname="action_Maze" description="Maze">
+        <property name="ground_level" type="int" default="0" />
+        <property name="maze_elevator" type="int" default="0" />
 	</action>
 */
 
 action_Maze = function()
 {
+
 };
 
 currentlyDraggingAction = null;
@@ -86,7 +89,10 @@ action_Maze.prototype.execute = function(currentNode)
     var s = ccbGetSceneNodeFromName("wall1");
     var f = ccbGetSceneNodeFromName("floor1");
     var end = ccbGetSceneNodeFromName("fin");
+    var elevator = ccbGetSceneNodeFromName("elevator");
+    var coin = ccbGetSceneNodeFromName("coin");
     var level = ccbGetCopperCubeVariable("level");
+
     if (!level){ level = 1; }
     ccbSetCopperCubeVariable("level",level);
     var disp = newMaze((level+2),(level+2));
@@ -97,39 +103,62 @@ action_Maze.prototype.execute = function(currentNode)
         for (var j = 0; j < disp[i].length; j++) {
             var selector = i+"-"+j;
 			var newscenenodef = ccbCloneSceneNode(f);
-			ccbSetSceneNodeProperty(newscenenodef,"Position",(j*30),0,(i*30));
+            var random = Math.floor(Math.random() * (100 - 1)) + 1;
+			ccbSetSceneNodeProperty(newscenenodef,"Position",(j*30),this.ground_level,(i*30));
 
 			if ( disp[i].length == j+1 && disp.length == i+1 ){
-				ccbSetSceneNodeProperty(end,"Position",(j*30),100,(i*30));
+                if ( this.maze_elevator == 1){
+                    //ccbSetSceneNodeProperty(end,"Position",(j*30),this.ground_level+100,(i*30));
+                    var newsceelevator = ccbCloneSceneNode(elevator);
+                    ccbSetSceneNodeProperty(newsceelevator,"Visible","true");
+                    ccbSetSceneNodeProperty(newsceelevator,"Position",(j*30),this.ground_level+15,(i*30));
+                    ccbSetSceneNodeProperty(end,"Position",0,this.ground_level+100,0);
+                }else if(this.maze_elevator == 2 ){
+                    var newsceelevator = ccbCloneSceneNode(elevator);
+                    ccbSetSceneNodeProperty(newsceelevator,"Visible","true");
+                    ccbSetSceneNodeProperty(newsceelevator,"Position",(0),this.ground_level+15,(0));
+                    ccbSetSceneNodeProperty(end,"Position",(j*30),this.ground_level+100,(i*30));
+                }else if( this.maze_elevator == 3 ){
+                    ccbSetSceneNodeProperty(end,"Position",(0),this.ground_level+100,(0));
+                }else{
+                    ccbSetSceneNodeProperty(end,"Position",(j*30),this.ground_level+100,(i*30));
+                }
+				
 			}		
 
 			if (disp[i][j][0] == 0) {
 				var newscenenode = ccbCloneSceneNode(s);
 				
 				ccbSetSceneNodeProperty(newscenenode,"Visible","true");
-				ccbSetSceneNodeProperty(newscenenode,"Position",(j*30),15,(i*30)-15);
+				ccbSetSceneNodeProperty(newscenenode,"Position",(j*30),this.ground_level+15,(i*30)-15);
 				ccbSetSceneNodeProperty(newscenenode,"Rotation",0,90,0);
 			}
 
 			if (disp[i][j][1] == 0) {
 				var newscenenode2 = ccbCloneSceneNode(s);
 				ccbSetSceneNodeProperty(newscenenode2,"Visible","true");
-				ccbSetSceneNodeProperty(newscenenode2,"Position",(j*30)+15,15,(i*30));
+				ccbSetSceneNodeProperty(newscenenode2,"Position",(j*30)+15,this.ground_level+15,(i*30));
 				ccbSetSceneNodeProperty(newscenenode2,"Rotation",0,0,0);
 			}
 
 			if (disp[i][j][2] == 0) {
 				var newscenenode3 = ccbCloneSceneNode(s);
 				ccbSetSceneNodeProperty(newscenenode3,"Visible","true");
-				ccbSetSceneNodeProperty(newscenenode3,"Position",(j*30),15,(i*30)+15);
+				ccbSetSceneNodeProperty(newscenenode3,"Position",(j*30),this.ground_level+15,(i*30)+15);
 				ccbSetSceneNodeProperty(newscenenode3,"Rotation",0,90,0);
 			}
 			if (disp[i][j][3] == 0) {
 				var newscenenode4 = ccbCloneSceneNode(s);
 				ccbSetSceneNodeProperty(newscenenode4,"Visible","true");
-				ccbSetSceneNodeProperty(newscenenode4,"Position",(j*30)-15,15,(i*30));
+				ccbSetSceneNodeProperty(newscenenode4,"Position",(j*30)-15,this.ground_level+15,(i*30));
 				ccbSetSceneNodeProperty(newscenenode4,"Rotation",0,0,0);
 			}
+
+            if (random<10){
+                var newscecoin = ccbCloneSceneNode(coin);
+                    ccbSetSceneNodeProperty(newscecoin,"Visible","true");
+                    ccbSetSceneNodeProperty(newscecoin,"Position",(j*30),this.ground_level+5,(i*30));
+            }
 
         /*
             if (disp[i][j][0] == 0) { $('#'+selector).css('border-top', '2px solid black'); }
